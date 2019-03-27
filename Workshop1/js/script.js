@@ -1,4 +1,5 @@
-
+src="https://kendo.cdn.telerik.com/2019.1.220/js/jquery.min.js"
+src="https://kendo.cdn.telerik.com/2019.1.220/js/kendo.all.min.js"
 var bookDataFromLocalStorage = [];
 var bookCategoryList = [
     { text: "資料庫", value: "database", src: "image/database.jpg" },
@@ -17,6 +18,103 @@ function loadBookData() {
     }
 }
 
+function changePic(img_link) { 
+var a=document.getElementById('image');
+    a.src=img_link;
+    }
+
+var currentDate = new Date();
+var currentHour = currentDate.getHours();
+var currentTimeStamp = currentDate.getTime();
+if (currentHour >= 12) {
+    currentTimeStamp += 86400000 * 2;//时间戳 往后推两天，毫秒
+} else {
+    currentTimeStamp += 86400000;//时间戳 往后推一天，毫秒
+}
+var minDate = new Date(currentTimeStamp);
+
+// change事件
+function onChange() {
+    console.log("change-------->");
+}
+
+
+$("#datepickerStar").kendoDatePicker({
+    value: new Date(),
+    culture: "zh-CN" ,
+    format: "yyyy-MM-dd",
+    change: onChange,     // 检测插件的变化函数
+});
+
+
+$("#datepickerEnd").kendoDatePicker({
+    value: new Date(),
+    culture: "zh-CN",
+    format: "yyyy-MM-dd",
+    change: onChange,
+});
+    
+// 校验用户手动输入的日期格式是否合法
+var regDate = /^[1-9]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/;
+// 校验进场日期
+vm.ifEnterDateValid = function () {
+    $scope.moreDate = [];
+    var strDate = $("#datepickerStar").val();
+    var endDate = $("#datepickerEnd").val();
+    if (!strDate || !endDate) {
+        toaster.error({ title: "提示", body: "起始日期或结束日期不得为空！" });
+        vm.dateValid = false;
+    } else {
+        if (!regDate.test(strDate) || !regDate.test(endDate)) {
+            toaster.error({ title: "提示", body: "起始日期或结束日期格式非法，请修改为yyyy-MM-dd，例如：2018-03-16！" });
+            vm.dateValid = false;
+        } else {
+            if (strDate + "" > endDate + "") {
+                toaster.error({ title: "提示", body: "起始日期不能大于结束日期！" });
+                vm.dateValid = false;
+            } else {
+                // 最小日期 从填表开始，未超过12点，第二个工作日；否则第三个工作日
+                var currentDate = new Date();
+                var currentHour = currentDate.getHours();
+                var currentTimeStamp = currentDate.getTime();
+                if (currentHour >= 12) {
+                    currentTimeStamp += 86400000 * 2;
+                } else {
+                    currentTimeStamp += 86400000;
+                }
+                var minDate = new Date(currentTimeStamp);
+                var minMonth = minDate.getMonth() + 1;
+                minMonth = minMonth > 9 ? minMonth : '0' + minMonth;
+                var minYMD = minDate.getFullYear() + '-' + minMonth + '-' + minDate.getDate();
+                if (strDate + "" < minYMD + "" || endDate + "" < minYMD + "") {
+                    toaster.error({ title: "提示", body: "自系统提交时间起，若未超过当日12点，起始日期从第二个工作日开始选；若超过当日12点，起始日期从第三个工作日开始选！" });
+                    vm.dateValid = false;
+                } else {
+                    // 范围不得超过31天
+                    var startTimeStamp = new Date(strDate).getTime();
+                    var endTimeStamp = new Date(endDate).getTime();
+                    var range = (endTimeStamp - startTimeStamp) / (24 * 60 * 60 * 1000);
+                    if (range > 31) {
+                        toaster.error({ title: "提示", body: "起始日期与结束日期不得超过31天！" });
+                        vm.dateValid = false;
+                    } else {
+                        var pushDate = strDate + '~' + endDate;
+                        //var moreDateStr = $scope.moreDate.join(",");
+                        //if(moreDateStr.indexOf(pushDate) != '-1'){
+                        //    toaster.error({title: "提示" , body: "该时间段已添加，请重新选择时间！"} );
+                        //}else{
+                        //    $scope.moreDate.push(pushDate);
+                        //}
+                        //$("#datepickerStar").val("");
+                        //$("#datepickerEnd").val("");
+                        $scope.moreDate.push(pushDate);
+                    }
+                }
+            }
+        }
+    }
+
+}             
 $(function () {
     loadBookData();
 });
