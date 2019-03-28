@@ -136,6 +136,7 @@
     <Content Include="css\textures\transtexture.png" />
     <Content Include="css\uikit.min.css" />
     <Content Include="data\book-data.js" />
+    <Content Include="HtmlPage1.html" />
     <Content Include="image\database.jpg" />
     <Content Include="image\home.jpg" />
     <Content Include="image\internet.jpg" />
