@@ -31,7 +31,6 @@ var a=document.getElementById('image');
     a.src=img_link;
     }
 kendo.init($("#book_price"));
-
 kendo.init($("#book_amount"));
 
 var currentDate = new Date();
