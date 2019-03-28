@@ -8,6 +8,34 @@ var bookCategoryList = [
     { text: "語言", value: "language", src: "image/language.jpg" }
 ];
 
+$("#add_book").click(function () {
+    var myWindow = $("#window"),
+        undo = $("#add_book");
+
+    undo.click(function () {
+        myWindow.data("kendoWindow").open();
+        undo.fadeOut();
+    });
+
+    function onClose() {
+        undo.fadeIn();
+    }
+
+    myWindow.kendoWindow({
+        width: "700px",
+        title: "新增書籍",
+        visible: false,
+        actions: [
+            "Pin",
+            "Minimize",
+            "Maximize",
+            "Close"
+        ],
+        close: onClose
+    }).data("kendoWindow").center().open();
+});
+
+
 // 載入書籍資料
 function loadBookData() {
     bookDataFromLocalStorage = JSON.parse(localStorage.getItem('bookData'));
@@ -31,7 +59,16 @@ var a=document.getElementById('image');
     a.src=img_link;
     }
 kendo.init($("#book_price"));
+    
 kendo.init($("#book_amount"));
+
+$("#book_price").keyup(function () {
+    $("#book_total").html($("#book_price").val() * $("#book_amount").val());
+});
+$("#book_amount").keyup(function () {
+    $("#book_total").html($("#book_price").val() * $("#book_amount").val());
+});
+
 
 var currentDate = new Date();
 var currentHour = currentDate.getHours();
