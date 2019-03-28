@@ -29,7 +29,30 @@
         <div class="uk-container align-center">
             <div id="example">
                 <div id="grid"></div>
-
+                <kendo-grid name="grid" height="550">
+                    <datasource type="DataSourceTagHelperType.Custom" custom-type="odata" page-size="20">
+                        <transport>
+                            <read url="book-data.js" />
+                        </transport>
+                    </datasource>
+                    <groupable enabled="true" />
+                    <sortable enabled="true" />
+                    <pageable button-count="5" refresh="true" page-sizes="new int[] { 5, 10, 20 }">
+                    </pageable>
+                    <filterable enabled="true" />
+                    <columns>
+                        <column field="BookId" title=" Book Id" width="240" />
+                        <column field="BookCategory" title="Book Category" />
+                        <column field="BookName" title="Book Name" />
+                        <column field="BookAuthor" title="BookAuthor" width="150" />
+                        <column field="BookBoughtDate" title="Book BoughtDate" />
+                        <column field="BookPublisher" title="Book Publisher" />
+                        <column field="BookPrice" title="Book Price" />
+                        <column field="BookAmount" title="BookAmount" />
+                        <column field="BookTotal" title="BookTotal" />
+                    </columns>
+                </kendo-grid>
+                <input id="datepicker" />
                 
             </div>
             

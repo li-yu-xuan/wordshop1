@@ -1,5 +1,4 @@
-src="https://kendo.cdn.telerik.com/2019.1.220/js/jquery.min.js"
-src="https://kendo.cdn.telerik.com/2019.1.220/js/kendo.all.min.js"
+
 var bookDataFromLocalStorage = [];
 var bookCategoryList = [
     { text: "資料庫", value: "database", src: "image/database.jpg" },
@@ -18,10 +17,22 @@ function loadBookData() {
     }
 }
 
+$(function () {
+    $("#datepicker").kendoDatePicker();
+    });
+$(function () {
+    $("#bought_datepicker").kendoDatePicker();
+});
+$(function () {
+    $("#delivered_datepicker").kendoDatePicker();
+});
 function changePic(img_link) { 
 var a=document.getElementById('image');
     a.src=img_link;
     }
+kendo.init($("#book_price"));
+
+kendo.init($("#book_amount"));
 
 var currentDate = new Date();
 var currentHour = currentDate.getHours();
@@ -39,7 +50,7 @@ function onChange() {
 }
 
 
-$("#datepickerStar").kendoDatePicker({
+$("#bought_datepicker").kendoDatePicker({
     value: new Date(),
     culture: "zh-CN" ,
     format: "yyyy-MM-dd",
@@ -47,7 +58,7 @@ $("#datepickerStar").kendoDatePicker({
 });
 
 
-$("#datepickerEnd").kendoDatePicker({
+$("#delivered_datepicker").kendoDatePicker({
     value: new Date(),
     culture: "zh-CN",
     format: "yyyy-MM-dd",
@@ -59,8 +70,8 @@ var regDate = /^[1-9]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/;
 // 校验进场日期
 vm.ifEnterDateValid = function () {
     $scope.moreDate = [];
-    var strDate = $("#datepickerStar").val();
-    var endDate = $("#datepickerEnd").val();
+    var strDate = $("#bought_datepicker").val();
+    var endDate = $("#delivered_datepicker").val();
     if (!strDate || !endDate) {
         toaster.error({ title: "提示", body: "起始日期或结束日期不得为空！" });
         vm.dateValid = false;
