@@ -80,8 +80,53 @@ $("#delivered_datepicker").kendoDatePicker({
 });
 });
 
+$(document).ready(function () {
+    $("#book_grid").kendoGrid({
+        dataSource: {
+            datatype:"json",
+            schema: {
+                model: {
+                    fields: {
+                        BookId: { type: "number" },
+                        BookCategory: { type: "string" },
+                        BookName: { type: "string" },
+                        BookAuthor: { type: "string" },
+                        BookBoughtDate: { type: "string" },
+                        BookPublisher: { type: "string" },
+                        BookDeliveredDate: { type: "string" },
+                        BookPrice: { type: "number" },
+                        BookAmount: { type: "number" },
+                        BookTotal: { type: "number" }
+                    }
+                }
+            },
+            pageSize: 20
+        },
+        height: 600,
+        weight:600,
+        scrollable: true,
+        sortable: true,
+        filterable: true,
+        pageable: {
+            input: true,
+            numeric: false
+        },
+        columns: [       
+            { command: ["destroy"] },
+            { field: "BookId", title: "書籍編號" },
+            { field: "BookCategory", title: "書籍種類" },
+            { field: "BookName", title: "書籍名稱" },
+            { field: "BookAuthor", title: "書籍作者" },
+            { field: "BookBoughtDate", title: "購買日期" },
+            { field: "BookPublisher", title: "出版社"},
+            { field: "BookDeliveredDate", title: "送達日期" },
+            { field: "BookPrice", title: "書籍價錢" },
+            { field: "BookAmount", title: "書籍數量"},
+            { field: "BookTotal",title:"書籍總計" }
+        ]
+    });
+    });
 
-           
 $(function () {
     loadBookData();
 });
