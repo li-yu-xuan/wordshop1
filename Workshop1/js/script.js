@@ -74,7 +74,7 @@ $("#book_amount").keyup(function () {
 $(function () {
 kendo.culture("zh-TW");
 $("#bought_datepicker").kendoDatePicker({
-    format: "yyyy-MM-dd",
+    format: ["MM/dd/yyyy", "yyyy/MM/dd"],
 });
 
 $("#delivered_datepicker").kendoDatePicker({
@@ -102,12 +102,13 @@ function moneyFormat() {
     $('#book_amount').innerHTML = fi;
 
 }
-function setTestData() {
-    var testData = [
-        { BookId: 1, BookName: "TEST1", BookCategory: 1, BookAuthor: 1, BookBoughtDate: 1, BookDeliveredDate: 1, BookPrice: 1, BookAmount: 1, BookTotal: 1 }
-    ];
-    localStorage["grid_data"] = JSON.stringify(testData);
-}
+$(document).ready(function () {
+    $("#book_category").change(function () {
+        $(".book-image").attr("src", "image/" + $('#book_category').val() + ".jpg");
+    });
+});
+
+
 
 function reset() {
     setTestData();
@@ -116,7 +117,7 @@ function reset() {
 
 $(document).ready(function gridtable(options) {
 
-    if (localStorage["grid_data"] == undefined) {
+    if (localStorage["bookData"] == undefined) {
         setTestData();
     }
 
@@ -124,20 +125,20 @@ $(document).ready(function gridtable(options) {
         transport: {
             create: function (options) {
                 console.log(options);
-                var localData = JSON.parse(localStorage["grid_data"]);
+                var localData = JSON.parse(localStorage["bookData"]);
                 options.data.BookId = localData[localData.length - 1].BookId + 1;
                 localData.push(options.data);
-                localStorage["grid_data"] = JSON.stringify(localData);
+                localStorage["bookData"] = JSON.stringify(localData);
                 options.success(options.data);
             },
             read: function (options) {
-                console.log(localStorage["grid_data"])
-                var localData = JSON.parse(localStorage["grid_data"]);
+                console.log(localStorage["bookData"])
+                var localData = JSON.parse(localStorage["bookData"]);
                 options.success(localData);
 
             },
             update: function (options) {
-                var localData = JSON.parse(localStorage["grid_data"]);
+                var localData = JSON.parse(localStorage["bookData"]);
 
                 for (var i = 0; i < localData.length; i++) {
                     if (localData[i].BookId == options.data.BookId) {
@@ -151,18 +152,18 @@ $(document).ready(function gridtable(options) {
                         localData[i].BookTotal = options.data.BookTotal;
                     }
                 }
-                localStorage["grid_data"] = JSON.stringify(localData);
+                localStorage["bookData"] = JSON.stringify(localData);
                 options.success(options.data);
             },
             destroy: function (options) {
-                var localData = JSON.parse(localStorage["grid_data"]);
+                var localData = JSON.parse(localStorage["bookData"]);
                 for (var i = 0; i < localData.length; i++) {
                     if (localData[i].BookId === options.data.BookId) {
                         localData.splice(i, 1);
                         break;
                     }
                 }
-                localStorage["grid_data"] = JSON.stringify(localData);
+                localStorage["bookData"] = JSON.stringify(localData);
                 options.success(localData);
             },
             save: function (options) {
@@ -187,10 +188,10 @@ $(document).ready(function gridtable(options) {
                     BookCategory: { type: "string" },
                     BookAuthor: { type: "string" },
                     BookBoughtDate: { type: "string" },
-                    BookDeliveredDate: { type: "string" },
-                    BookPrice: { type: "string" },
-                    BookAmount: { type: "string" },
-                    BookTotal: { type: "string" }
+                    BookDeliveredDate: {type: "string"},
+                    BookPrice: { type: "number" },
+                    BookAmount: { type: "number" },
+                    BookTotal: { type: "number" }
                 }
             }
         },
@@ -200,16 +201,18 @@ $(document).ready(function gridtable(options) {
     var grid = $("#grid").kendoGrid({
         dataSource: dataSource,
         pageable: true,
-        height: 500,
-        toolbar: ["create", "save", "cancel"],
+        height: 800,
+        ///toolbar: [" <label>我想要找.......</label>"],
         columns: [
             { command: "destroy", width: "130px" },
-            { field: "BookId", width: "100px", title: "書籍" + "<br>" + "編號" },
-            { field: "BookName", width: "100px", title: "書籍" + "<br>" + "名稱" },
-            { field: "BookCategory", width: "100px", title: "書籍" + "<br>" + "種類" },
-            { field: "BookAuthor", width: "100px", title: "作者" },
-            { field: "BookBoughtDate", width: "100px", title: "購買" + "<br>" + "日期" },
-            { field: "BookDeliveredDate", width: "100px", title: "送達" + "<br>" + "狀態" },
+            { field: "BookId", width: "100px", title: "書籍編號" },
+            { field: "BookName", width: "100px", title: "書籍名稱" },
+            { field: "BookCategory", width: "100px", title: "書籍種類" },
+            { field: "BookAuthor", width: "100px", title: "書籍作者" },
+            { field: "BookBoughtDate", width: "100px", title: "購買日期" },
+            {
+              field: "BookDeliveredDate", width: "100px", title: "送達狀態", template: "#if(BookDeliveredDate!=null){#" + "<i class='fas fa-truck' title='#:kendo.toString(BookDeliveredDate,'yyyy-MM-dd')#'></i>" +
+                    "#}#"},
             { field: "BookPrice", width: "100px", title: "金額" },
             { field: "BookAmount", width: "100px", title: "數量" },
             { field: "BookTotal", width: "100px", title: "總計" }
@@ -229,7 +232,7 @@ function addbook() {
     new_BookAmount = $('#book_amount').val();
     new_BookTotal = $("#book_amount").val() * $("#book_price").val()
 
-    var localData = JSON.parse(localStorage["grid_data"]);
+    var localData = JSON.parse(localStorage["bookData"]);
     new_BookId = localData.length + 1;
     console.log(new_BookId);
     var testData3 = [
@@ -238,38 +241,68 @@ function addbook() {
 
 
     localData = localData.concat(testData3);
-    localStorage["grid_data"] = JSON.stringify(localData);
+    localStorage["bookData"] = JSON.stringify(localData);
     $("#grid").data("kendoGrid").dataSource.read();
 
     $("#dialog").data("kendoWindow").close();
 
 
 }
-$(function () {
-    var regDate = /^[1-9]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/;
-    // 校验进场日期
-    vm.ifEnterDateValid = function () {
-        $scope.moreDate = [];
-        var strDate = $("#bought_datepicker").val();
-        var endDate = $("#delivered_datepicker").val();
-        if (!strDate || !endDate) {
-            toaster.error({ title: "提示", body: "起始日期或结束日期不得为空！" });
-            vm.dateValid = false;
+$(document).ready(function () {
+    function startChange() {
+        var startDate = start.value(),
+            endDate = end.value();
+
+        if (startDate) {
+            startDate = new Date(startDate);
+            startDate.setDate(startDate.getDate());
+            end.min(startDate);
+        } else if (endDate) {
+            start.max(new Date(endDate));
         } else {
-            if (!regDate.test(strDate) || !regDate.test(endDate)) {
-                toaster.error({ title: "提示", body: "起始日期或结束日期格式非法，请修改为yyyy-MM-dd，例如：2018-03-16！" });
-                vm.dateValid = false;
-            } else {
-                if (strDate + "" > endDate + "") {
-                    toaster.error({ title: "提示", body: "起始日期不能大于结束日期！" });
-                    vm.dateValid = false;
-                }
-            }
+            endDate = new Date();
+            start.max(endDate);
+            end.min(endDate);
         }
     }
 
+    function endChange() {
+        var endDate = end.value(),
+            startDate = start.value();
 
-                });
+        if (endDate) {
+            endDate = new Date(endDate);
+            endDate.setDate(endDate.getDate());
+            start.max(endDate);
+        } else if (startDate) {
+            end.min(new Date(startDate));
+        } else {
+            endDate = new Date();
+            start.max(endDate);
+            end.min(endDate);
+        }
+    }
+
+    var start = $("#bought_datepicker").kendoDatePicker({
+        value: new Date(),
+        change: startChange, format: "yyyy-MM-dd"
+    }).data("kendoDatePicker");
+
+    var end = $("#delivered_datepicker").kendoDatePicker({
+
+        change: endChange, format: "yyyy-MM-dd"
+    }).data("kendoDatePicker");
+
+    start.max(end.value());
+    end.min(start.value());
+});
+//3位1撇
+
+
+
+
+////
+
 $(function () {
     loadBookData();
 });
